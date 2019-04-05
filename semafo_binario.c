@@ -3,7 +3,8 @@
 #include <sys/sem.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "dijkstra.h"
+#include <stdlib.h>
+#include "disjkrsta.h"
 
 
 #define KEY 123
