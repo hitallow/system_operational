@@ -22,28 +22,32 @@ void writer(int *sem){
         P(sem[0]);
             printf("Estou escrevendo no arquivo\n");
         V(sem[0]);
-
     } while (escritorI--);
 }
-void reader(int sem[2] ){
-    printf("\nCheguei na função leitor\n");
+void reader(int* sem ){
+    printf("\t\t\nCheguei na função leitor\n");
     do{
-        // paro o mutex
+        // bloqueio o mutex
         P(sem[1]);
-        readcount++;
-        if(readcount == 1 ){
-            P(sem[0]);
-        }
-        // libero o mutex
+            readcount ++;
+            // o primeiro processo, para o semaforo
+            if(readcount == 1 ){
+                printf("\t\tSou o primeiro processo, vou bloquear o sem\n");
+                //P(sem[0]);
+            }
+            // libero o mutex
+        printf("\t\tvou liberar o mutex\n\n");
         V(sem[1]);
         printf("\t\tEstou lendo!\n");
         
 
-        // paro o mutex
+        // bloqueio o mutex
         P(sem[1]);
-        readcount -- ;
-        if(readcount == 0)
-            V(sem[0]);
+            readcount -= 1 ;
+            if(readcount == 0)
+            {
+                V(sem[0]);
+            }
         V(sem[1]);
     }while(leitorI--);  
 }
@@ -53,8 +57,8 @@ int main()
     printf("Estou no main\n");
     
     int semaforos[2] ;
-    semaforos[0] = sem_create(KEY,1);
-    semaforos[1]= sem_create(KEY,1);
+    semaforos[0] = sem_create(2,1); // sem
+    semaforos[1]= sem_create(KEY,1);  //mutex
 
 
     // semaforos -> 1 > semaforos

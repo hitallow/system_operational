@@ -9,6 +9,8 @@
 
 #define KEY 123
 
+
+
 int main()
 {
     int sem ; 
@@ -29,7 +31,5 @@ int main()
         printf("recurso disponivel para o processo PAI \n");
         sem_delete(sem);
     }
-    
-    
     return 0;
 }
