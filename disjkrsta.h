@@ -25,7 +25,7 @@ int sem_create(key_t key, int initval)
      return(semid) ;
 }
 
-void P(int semid) 
+void wait_d(int semid) 
 {
      struct sembuf sempar[1];
      sempar[0].sem_num = 0 ;
@@ -35,7 +35,7 @@ void P(int semid)
           perror("Erro operacao P") ;
 }
 
-void V(int semid)
+void signal_d(int semid)
 {
      struct sembuf sempar[1];
      sempar[0].sem_num = 0 ;
