@@ -29,13 +29,13 @@ struct semaforos
     int empty;
     int buffer[N];
 };
-
+int mutex, full, empty, buffer[N];
 // semaforos
 struct semaforos sem ;
 
 
 
-int produtor()
+int produtor_f()
 {
     printf("Cheguei na função produtora!");
     do
@@ -44,25 +44,26 @@ int produtor()
         printf("produzindo um item");
         int a = rand()%100;
 
-        wait_d(sem.empty);
-        wait_d(sem.mutex);
+        wait_d(empty);
+        wait_d(mutex);
             printf("estou adcionado um valor na lista");
-            sem.buffer[sem.empty%N] = a; 
-        signal_d(sem.mutex);
-        signal_d(sem.full);
+            buffer[empty%N] = a; 
+        signal_d(mutex);
+        signal_d(full);
 
     } while (produtorI--);
     return 0 ;
 }
-int consumidor(){
+int consumidor_f(){
  do
  {
      printf("Cheguei na função consumidora!");
-     wait_d(sem.full);
-     wait_d(sem.mutex);
+     wait_d(full);
+     wait_d(mutex);
         printf("\t\tEstou removendo\n\n");
-    signal_d(sem.mutex);
-    signal_d(sem.empty);
+        printf("consumi %d ",buffer[(empty-1)%N]);
+    signal_d(mutex);
+    signal_d(empty);
         printf("\t\tEstou consumindo\n\n");
  } while (consumidorI--);
     return 0 ;
@@ -78,8 +79,8 @@ int main()
     printf("iniciei o main\n");
     IniciarValores();
     printf("guardei os valores no sem\n\n");
-    pthread_create(&t_produtor , NULL,  (void*)produtor , NULL);
-    pthread_create(&t_consumidor, NULL, (void*)consumidor , NULL);
+    pthread_create(&t_produtor , NULL,  (void*) produtor_f , NULL);
+    pthread_create(&t_consumidor, NULL, (void*) consumidor_f , NULL);
     pthread_join(t_consumidor , NULL);
     pthread_join(t_produtor , NULL);
     printf("finalizei!\n\n");
@@ -89,7 +90,10 @@ int main()
 // inicia uma struct com os valores
 void IniciarValores()
 {    
-    sem.mutex = sem_create(KEY,1);
-    sem.empty = sem_create(KEY2,N);
-    sem.full = sem_create(KEY3,0);
+    mutex = sem_create(KEY,1);
+    empty = sem_create(KEY2,N);
+    full = sem_create(KEY3,0);
+    printf("mutex > %d\n",mutex);
+    printf("empty %d \n",empty);
+    printf("full > %d\n",full);    
 }

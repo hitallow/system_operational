@@ -31,34 +31,34 @@ int writer(){
     do{
         printf("\ncomeçei a iteração %d",10 - escritorI);
         wait_d(sem.sem);
-            printf("\n\nEstou na função writter e sou o processo %d\n",getpid());
-            printf("Estou escrevendo no arquivo\n");
+            printf("\n\nEstou na função writter e sou o processo %d",getpid());
+            printf("\nEstou escrevendo no arquivo");
         signal_d(sem.sem);
-        printf("Liberei o semaforo\n\n");
-        printf("teminei a iteração %d\n\n",10 - escritorI );
+        printf("\nLiberei o semaforo");
+        printf("\nteminei a iteração %d",10 - escritorI );
     } while (escritorI--);
     return 0;
 }
 int reader(){
-    printf("\n\n\t\tCheguei na função leitor\n");
+    printf("\n\n\t\tCheguei na função leitor");
     do{
-        printf("\t\tcomeçei a iteração %d",10 - leitorI);
+        printf("\n\t\tcomeçei a iteração %d",10 - leitorI);
         // bloqueio o mutex
         wait_d(sem.mutex);
-            printf("\n\n\t\tEstou na função reader e sou o processo %d\n",getpid());
+            printf("\n\t\tEstou na função reader e sou o processo %d",getpid());
             readcount ++;
             // o primeiro processo, para o semaforo
             if(readcount == 1 )
             {
-                printf("\t\tSou o primeiro processo, vou bloquear o sem, %d\n",readcount);
+                printf("\n\t\tSou o primeiro processo, vou bloquear o sem, %d",readcount);
                 wait_d(sem.sem);
-                printf("\t\tbloqueei o processo!\n\n");
+                printf("\n\t\tbloqueei o processo!");
             }
             // libero o mutex
-        printf("\t\tvou liberar o mutex\n\n");
+        printf("\t\tvou liberar o mutex");
         signal_d(sem.mutex);
-        printf("\t\tLiberei o mutex, agora vou ler em paz\n");
-        printf("\t\tEstou lendo!\n");
+        printf("\t\tLiberei o mutex, agora vou ler em paz");
+        printf("\t\tEstou lendo!");
         
         // bloqueio o mutex
         wait_d(sem.mutex);
