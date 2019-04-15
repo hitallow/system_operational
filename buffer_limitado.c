@@ -7,12 +7,15 @@
 #include <pthread.h>
 #include "disjkrsta.h"
 #define N 5
+#define KEY  7901
+#define KEY2 1249
+#define KEY3 2018
 
 
 //funções utilizadas
 
 // inicia uma struct com os valores
-void IniciarValores(struct semaforos *sem);
+void IniciarValores();
 
 // variaveis de interação
 int produtorI = 20;
@@ -24,69 +27,69 @@ struct semaforos
     int mutex;
     int full;
     int empty;
-} ;
+    int buffer[N];
+};
 
 // semaforos
 struct semaforos sem ;
 
 
 
-
-// treades
-pthread_t t_produtor, t_consumidor;
-
-
-void* produtor()
+int produtor()
 {
+    printf("Cheguei na função produtora!");
     do
     {
+
         printf("produzindo um item");
-        P(sem.empty);
-        P(sem.mutex);
+        int a = rand()%100;
+
+        wait_d(sem.empty);
+        wait_d(sem.mutex);
             printf("estou adcionado um valor na lista");
-        V(sem.mutex);
-        V(sem.full);
+            sem.buffer[sem.empty%N] = a; 
+        signal_d(sem.mutex);
+        signal_d(sem.full);
 
     } while (produtorI--);
+    return 0 ;
 }
-void* consumidor(){
+int consumidor(){
  do
  {
-     P(sem.full);
-     P(sem.mutex);
+     printf("Cheguei na função consumidora!");
+     wait_d(sem.full);
+     wait_d(sem.mutex);
         printf("\t\tEstou removendo\n\n");
-    V(sem.mutex);
-    V(sem.empty);
+    signal_d(sem.mutex);
+    signal_d(sem.empty);
         printf("\t\tEstou consumindo\n\n");
  } while (consumidorI--);
- 
+    return 0 ;
 }
-int main(int argc, char const *argv[])
-{
-    printf("iniciei o main\n");
-    IniciarValores(&sem);
-    printf("guardei os valores no sem\n\n");
-    printf("sem -> mutex > %d",sem.mutex);
-    printf("sem -> full > %d",sem.full);
-    printf("sem -> empty > %d",sem.empty);
 
-    pthread_create(&t_produtor , NULL,(void*)produtor , NULL);
+// treades
+pthread_t t_produtor;
+pthread_t t_consumidor;
+
+int main()
+{
+    srand(time(NULL));
+    printf("iniciei o main\n");
+    IniciarValores();
+    printf("guardei os valores no sem\n\n");
+    pthread_create(&t_produtor , NULL,  (void*)produtor , NULL);
     pthread_create(&t_consumidor, NULL, (void*)consumidor , NULL);
-    
     pthread_join(t_consumidor , NULL);
     pthread_join(t_produtor , NULL);
-    printf("finalizei mermão!\n\n");
+    printf("finalizei!\n\n");
     return 0;
 }
 
 // inicia uma struct com os valores
-void IniciarValores(struct semaforos *sem){
-    
-    sem->mutex = sem_create(1,0);
-    sem->empty = sem_create(N,N);
-    sem->full = sem_create(5,0);
-    printf("sem -> mutex > %d\n",sem->mutex);
-    printf("sem -> full > %d\n",sem->full);
-    printf("sem -> empty > %d\n",sem->empty);
-    
+void IniciarValores()
+{    
+    sem.mutex = sem_create(KEY,1);
+    sem.empty = sem_create(KEY2,N);
+    sem.full = sem_create(KEY3,0);
 }
