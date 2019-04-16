@@ -5,10 +5,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "disjkrsta.h"
+#include "dijkstra.h"
 
 // chaves 
-#define KEY2 111
+#define KEY2 333
 #define KEY 222
 
 pthread_t leitor ;
@@ -23,12 +23,13 @@ struct semaforos {
 };
 struct semaforos sem ; 
 void init(){
-    sem.sem  = sem_create(KEY,1); // sem
-    sem.mutex = sem_create(KEY2 ,1);  //mutex
+    sem.sem  = sem_create_d(KEY,1); // sem
+    sem.mutex = sem_create_d(KEY2 ,1);  //mutex
 }
 
 int writer(){
     do{
+        printf("\nwriter()");
         printf("\ncomeçei a iteração %d",10 - escritorI);
         wait_d(sem.sem);
             printf("\n\nEstou na função writter e sou o processo %d",getpid());
@@ -42,10 +43,11 @@ int writer(){
 int reader(){
     printf("\n\n\t\tCheguei na função leitor");
     do{
-        printf("\n\t\tcomeçei a iteração %d",10 - leitorI);
+        printf("\n\t\treader()");
+        printf("\n\t\tcomecei a iteração %d [%d]",10 - leitorI,sem.mutex);
         // bloqueio o mutex
         wait_d(sem.mutex);
-            printf("\n\t\tEstou na função reader e sou o processo %d",getpid());
+            //printf("\n\t\tEstou na função reader e sou o processo %d",getpid());
             readcount ++;
             // o primeiro processo, para o semaforo
             if(readcount == 1 )
@@ -58,17 +60,17 @@ int reader(){
         printf("\t\tvou liberar o mutex");
         signal_d(sem.mutex);
         printf("\t\tLiberei o mutex, agora vou ler em paz");
-        printf("\t\tEstou lendo!");
-        
+    
         // bloqueio o mutex
         wait_d(sem.mutex);
             readcount-- ;
             if(readcount == 0)
             {
+                printf("\n\t\tsou o último a sair, vou liberar o semafóro");
                 signal_d(sem.sem);
             }
         signal_d(sem.mutex);
-        printf("\t\tteminei a iteração %d",10 - leitorI);
+        //printf("\t\tteminei a iteração %d",10 - leitorI);
     }while(leitorI--);  
     return 0;
 }
@@ -76,17 +78,13 @@ int reader(){
 
 int main()
 {
-
     init();
-    
-    printf("mutex -> %d\n\n",sem.mutex);
-    printf("sem -> %d\n\n"  ,sem.sem);
-    
     pthread_create(&escritor , NULL ,(void*) writer , NULL );
     pthread_create(&leitor ,   NULL ,(void*) reader , NULL );
     pthread_join(leitor , NULL);
     pthread_join(escritor , NULL);
     printf("\nTerminei todos os processos\n");
-
+    sem_delete(sem.mutex);
+    sem_delete(sem.sem);
     return 0;
 }
