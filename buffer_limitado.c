@@ -37,54 +37,65 @@ struct semaforos sem ;
 
 int produtor_f()
 {
-    printf("\nCheguei na função produtora!");
-    do
-    {
-        printf("\nprodutor_f()");
-        printf("\nproduzindo um item");
+    printf("\np> Cheguei na função produtora!");
+    //do
+   // {
+        printf("\np> produtor_f()");
+        printf("\np> produzindo um item");
         int a = rand()%100;
+        printf("\np> vou bloquear o mutex");
         wait_d(mutex);
         wait_d(empty);
-            printf("\nestou adcionado um valor na lista");
+            printf("\np> estou adcionado um valor na lista");
             buffer[empty%N] = a; 
         signal_d(full);
         signal_d(mutex);
         
 
-    } while (produtorI--);
+   // } while (produtorI--);
     return 0 ;
 }
 int consumidor_f(){
- printf("\n\t\tCheguei na função consumidora!");
- do
- {
-     printf("\n\t\tconsumidor_f()");
+ printf("\n\t\tc> Cheguei na função consumidora!");
+ //do
+ //{
+     printf("\n\t\tc> consumidor_f()");
      wait_d(full);
+     printf("\n\t\tc> vou bloquear o mutex");
      wait_d(mutex);
-        printf("\n\t\tEstou removendo\n\n");
-        printf("\n\t\tconsumi %d ",buffer[(empty-1)%N]);
+        printf("\n\t\tc> Estou removendo\n\n");
+        printf("\n\t\tc> consumi %d ",buffer[(empty-1)%N]);
     signal_d(mutex);
     signal_d(empty);
-        printf("\n\t\tEstou consumindo\n\n");
- } while (consumidorI--);
+        printf("\n\t\tc> Estou consumindo\n\n");
+ //} while (consumidorI--);
     return 0 ;
 }
 
 // treades
-pthread_t t_produtor;
-pthread_t t_consumidor;
+pthread_t t_produtor[5];
+pthread_t t_consumidor[5];
 
 int main()
 {
     srand(time(NULL));
     IniciarValores();
-    pthread_create(&t_produtor , NULL,  (void*) produtor_f , NULL);
-    pthread_create(&t_consumidor, NULL, (void*) consumidor_f , NULL);
-    pthread_join(t_consumidor , NULL);
-    pthread_join(t_produtor , NULL);
-    sem_delete(sem.mutex);
-    sem_delete(sem.full);
-    sem_delete(sem.empty);
+    for(int i = 0; i < 5; i++)
+    {
+        pthread_create(&t_produtor[i] , NULL,  (void*) produtor_f , NULL);
+        pthread_create(&t_consumidor[i], NULL, (void*) consumidor_f , NULL);
+    }
+    for(int i = 0; i < 5; i++)
+    {
+        pthread_join(t_consumidor[i] , NULL);
+        pthread_join(t_produtor[i] , NULL);
+    }
+    
+
+
+    sem_delete(mutex);
+    sem_delete(full);
+    sem_delete(empty);
     return 0;
 }
 
