@@ -14,9 +14,9 @@
 pthread_t leitor[5];
 pthread_t escritor[5];
 int readcount = 0;
-int interactions= 0;
 
 
+int teste = 0;
 struct semaforos {
     int mutex; 
     int sem;
@@ -30,16 +30,17 @@ void init(){
 int writer(){
     int escritorI = 10;
     //do{
-        printf("\nwriter()\nvou entrar na seção crítica");
+        printf("\n\twriter()\n\t w>Vou entrar na seção crítica");
         wait_d(sem.sem);
-            sleep(3);
-            printf("\n\testou na seção crítica");
-            printf("\n\tEstou escrevendo no arquivo");
-        printf("\n\tVou liberar o semaforo\n\n");
+          //  sleep(3);
+            printf("\n\t w> testou na seção crítica");
+            printf("\n\t w> Estou escrevendo no arquivo");
+        teste += 5;
+        printf("\n\t w> Vou liberar o semaforo\n\n");
         
 
         signal_d(sem.sem);
-        interactions++;
+
     //} while (escritorI--);
     return 0;
 }
@@ -48,35 +49,37 @@ int reader(){
     //do{
         printf("\n\t\treader()");
         // bloqueio o mutex
-        printf("\n\n\t\tVou bloquear o mutex");
+        printf("\n\n\t\tr> Vou bloquear o mutex");
         wait_d(sem.mutex);
-            sleep(2);
+           // sleep(2);
             //printf("\n\t\tEstou na função reader e sou o processo %d",getpid());
             readcount ++;
             // o primeiro processo, para o semaforo
             if(readcount == 1 )
             {
-                printf("\n\t\tSou o primeiro processo, vou bloquear o semaforo");
+                printf("\n\t\tr> Sou o primeiro processo, vou bloquear o semaforo");
                 wait_d(sem.sem);
-                printf("\n\n\t\tbloqueei o processo!");
+                printf("\n\n\t\tr> bloqueei o processo!");
             }else{
-                printf("\n\t\tJá existia outro leitor, não preciso bloquear o semaforo");
+                printf("\n\t\tr> Já existia outro leitor, não preciso bloquear o semaforo");
             }
             // libero o mutex
+        
         signal_d(sem.mutex);
-        printf("\n\t\tLiberei o mutex, agora vou ler em paz");
-        sleep(2);
-        interactions++;
+        printf("\n\t\tr> Liberei o mutex, agora vou ler em paz");
+
+        sleep(10);
     
         // bloqueio o mutex
         wait_d(sem.mutex);
+            teste-=5;
             readcount-- ;
             if(readcount == 0)
             {
-                printf("\n\n\t\tsou o último a sair, vou liberar o semafóro");
+                printf("\n\n\t\tr> sou o último a sair, vou liberar o semafóro");
                 signal_d(sem.sem);
             }else{
-                printf("\n\n\t\tainda existem outros leitores, vou sair e deixar o semaforo bloqueado");
+                printf("\n\n\t\tr> ainda existem outros leitores, vou sair e deixar o semaforo bloqueado");
             }
         signal_d(sem.mutex);
         //printf("\t\tteminei a iteração %d",10 - leitorI);
@@ -88,7 +91,7 @@ int reader(){
 int main()
 {
     init();
-    for(int i = 0; i <= 4; i++)
+    for(int i = 0; i < 5; i++)
     {
         pthread_create(&escritor[i] , NULL ,(void*) writer , NULL );    
         pthread_create(&leitor[i] ,   NULL ,(void*) reader , NULL );
@@ -100,8 +103,9 @@ int main()
     }
     
     printf("\nTerminei todos os processos\n");
-    printf("n > %d",interactions);
+    
     sem_delete(sem.mutex);
     sem_delete(sem.sem);
+    printf("teste> %d",teste);
     return 0;
 }
