@@ -25,34 +25,47 @@ void inicializaSem(void){
     int id = KEY; 
     for(int i = 0; i < 5; i++)
     {
-        chopstick[i] = sem_create_d( 100*id++, 1);
+        chopstick[i] = sem_create_d( 100+id++, 1);
     }
     
 }
 void* filoso_f(int i){
-    do{
+
+    //printf(">>> vou iniciar %s value i = %d\n",nomesFilosofos[i],i);
+    //do{
+        printf("sou o filósofo %s e vou pegar o primeiro chopstrik\n",nomesFilosofos[i]);
         wait_d(chopstick[i]);
+        printf("\tsou o filósofo %s e vou pegar o segundo chopstrik\n",nomesFilosofos[i]);
         wait_d(chopstick[(i+1)%N]);
-        printf("Sou o filósofo %s e estou comendo!",nomesFilosofos[i] );
+        printf("\t\tSou o filósofo %s e  agora vou começar comer!\n\n",nomesFilosofos[i] );
+        sleep(0);
+        printf("sou o filósofo %s e terminei de comer vou liberar o primeiro chopstrik\n",nomesFilosofos[i]);
         signal_d(chopstick[(i+1)%N]);
+        printf("sou o filósofo %s e terminei de comer vou liberar o segundo chopstrik\n",nomesFilosofos[i]);
         signal_d(chopstick[i]);
-        printf("Sou o filósofo %d e estou pensando!",nomesFilosofos[i]);
-    }while(1);
+        printf("\tSou o filósofo %s e estou pensando!\n\n",nomesFilosofos[i]);
+   // }while(1);
     
 
 }
 
-void fat(int n){
-    double value = 1;
-    for(int i =1 ;i <=n; i++){
-        value = value * i;
-    }
-    printf("value> %.lf",value);
-}
-int main(int argc, char const *argv[])
+
+int main()
 {
+    inicializaSem();
+    inicializaNomes();
     for(int i = 0 ;i< 5;i++ ){
-        pthread_create();
+        //printf(">>>>>>>>>>vou criar a trad com %d\n",i);
+        pthread_create(&filoso[i], NULL, (void*)  filoso_f , (i));    
     }
+    for(int i = 0;i<5;i++){
+        pthread_join(filoso[i],NULL);
+    }
+    for(int i = 0; i < 5; i++)
+    {
+        sem_delete(chopstick[i]);
+    }
+    
+    
     return 0;
 }
