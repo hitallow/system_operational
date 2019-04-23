@@ -29,22 +29,23 @@ void inicializaSem(void){
     }
     
 }
-void* filoso_f(int i){
-
-    //printf(">>> vou iniciar %s value i = %d\n",nomesFilosofos[i],i);
-    //do{
-        printf("sou o filósofo %s e vou pegar o primeiro chopstrik\n",nomesFilosofos[i]);
-        wait_d(chopstick[i]);
-        printf("\tsou o filósofo %s e vou pegar o segundo chopstrik\n",nomesFilosofos[i]);
-        wait_d(chopstick[(i+1)%N]);
-        printf("\t\tSou o filósofo %s e  agora vou começar comer!\n\n",nomesFilosofos[i] );
+void* filoso_f(int index){
+   
+    printf(">>> vou iniciar %s \n",nomesFilosofos[index],index);
+    int interator = 20;
+    do{
+        printf("sou o filósofo %s e vou pegar o primeiro chopstick\n",nomesFilosofos[index]);
+        wait_d(chopstick[index]);
+        printf("\tsou o filósofo %s e vou pegar o segundo chopstick\n",nomesFilosofos[index]);
+        wait_d(chopstick[(index+1)%N]);
+        printf("\t\tSou o filósofo %s e  agora vou começar comer!\n\n",nomesFilosofos[index] );
         sleep(0);
-        printf("sou o filósofo %s e terminei de comer vou liberar o primeiro chopstrik\n",nomesFilosofos[i]);
-        signal_d(chopstick[(i+1)%N]);
-        printf("sou o filósofo %s e terminei de comer vou liberar o segundo chopstrik\n",nomesFilosofos[i]);
-        signal_d(chopstick[i]);
-        printf("\tSou o filósofo %s e estou pensando!\n\n",nomesFilosofos[i]);
-   // }while(1);
+        printf("sou o filósofo %s e terminei de comer vou liberar o primeiro chopstick\n",nomesFilosofos[index]);
+        signal_d(chopstick[(index+1)%N]);
+        printf("sou o filósofo %s e terminei de comer vou liberar o segundo chopstick\n",nomesFilosofos[index]);
+        signal_d(chopstick[index]);
+        printf("\tSou o filósofo %s e estou pensando!\n\n",nomesFilosofos[index]);
+    }while(--interator);
     
 
 }
@@ -54,9 +55,10 @@ int main()
 {
     inicializaSem();
     inicializaNomes();
-    for(int i = 0 ;i< 5;i++ ){
+    int i;
+    for(i = 0 ;i< 5;i++ ){
         //printf(">>>>>>>>>>vou criar a trad com %d\n",i);
-        pthread_create(&filoso[i], NULL, (void*)  filoso_f , (i));    
+        pthread_create(&filoso[i], NULL, (void*)  filoso_f , i);    
     }
     for(int i = 0;i<5;i++){
         pthread_join(filoso[i],NULL);
