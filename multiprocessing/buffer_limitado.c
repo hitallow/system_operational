@@ -10,6 +10,8 @@
 #define KEY  7901
 #define KEY2 1249
 #define KEY3 2018
+#define MAX 1000
+#define LEN_THREADS 10
 
 
 //funções utilizadas
@@ -38,33 +40,33 @@ struct semaforos sem ;
 int produtor_f()
 {
     printf("\np> Cheguei na função produtora!");
-    //do
-   // {
-        printf("\np> produtor_f()");
+    
+        
         printf("\np> produzindo um item");
-        int a = rand()%100;
-        printf("\np> vou bloquear o mutex");
+        
+        printf("\np> vou entrar na seção crítica");
         wait_d(mutex);
         wait_d(empty);
-            printf("\np> estou adcionado um valor na lista");
-            buffer[empty%N] = a; 
+            
+        
+            buffer[empty%N] = rand()%MAX; 
+            
         signal_d(full);
         signal_d(mutex);
         
 
-   // } while (produtorI--);
     return 0 ;
 }
 int consumidor_f(){
- printf("\n\t\tc> Cheguei na função consumidora!");
+ printf("\n\t\tc> Cheguei na função consumidora!",getpid());
  //do
  //{
      printf("\n\t\tc> consumidor_f()");
      wait_d(full);
-     printf("\n\t\tc> vou bloquear o mutex");
+     printf("\n\t\tc> vou entrar na seção crítica");
      wait_d(mutex);
         printf("\n\t\tc> Estou removendo\n\n");
-        printf("\n\t\tc> consumi %d ",buffer[(empty-1)%N]);
+        printf("\n\t\tc> consumi %d ",buffer[(empty)%N]);
     signal_d(mutex);
     signal_d(empty);
         printf("\n\t\tc> Estou consumindo\n\n");
@@ -73,19 +75,19 @@ int consumidor_f(){
 }
 
 // treades
-pthread_t t_produtor[5];
-pthread_t t_consumidor[5];
+pthread_t t_produtor[LEN_THREADS];
+pthread_t t_consumidor[LEN_THREADS];
 
 int main()
 {
     srand(time(NULL));
     IniciarValores();
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < LEN_THREADS; i++)
     {
         pthread_create(&t_produtor[i] , NULL,  (void*) produtor_f , NULL);
         pthread_create(&t_consumidor[i], NULL, (void*) consumidor_f , NULL);
     }
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < LEN_THREADS; i++)
     {
         pthread_join(t_consumidor[i] , NULL);
         pthread_join(t_produtor[i] , NULL);
