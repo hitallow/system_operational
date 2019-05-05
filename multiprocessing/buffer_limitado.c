@@ -58,9 +58,8 @@ int produtor_f()
     return 0 ;
 }
 int consumidor_f(){
- printf("\n\t\tc> Cheguei na função consumidora!",getpid());
- //do
- //{
+ printf("\n\t\tc> Cheguei na função consumidora!");
+
      printf("\n\t\tc> consumidor_f()");
      wait_d(full);
      printf("\n\t\tc> vou entrar na seção crítica");
@@ -70,7 +69,7 @@ int consumidor_f(){
     signal_d(mutex);
     signal_d(empty);
         printf("\n\t\tc> Estou consumindo\n\n");
- //} while (consumidorI--);
+
     return 0 ;
 }
 
