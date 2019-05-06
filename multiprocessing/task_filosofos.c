@@ -34,12 +34,19 @@ void* filoso_f(int index){
     printf(">>> vou iniciar %s \n",nomesFilosofos[index],index);
     int interator = 20;
     do{
-        printf("sou o filósofo %s e vou pegar o primeiro chopstick\n",nomesFilosofos[index]);
-        wait_d(chopstick[index]);
-        printf("\tsou o filósofo %s e vou pegar o segundo chopstick\n",nomesFilosofos[index]);
-        wait_d(chopstick[(index+1)%N]);
+        if(!index%2){
+            printf("sou o filósofo %s e vou pegar o primeiro chopstick\n",nomesFilosofos[index]);
+            wait_d(chopstick[index]);
+            printf("\tsou o filósofo %s e vou pegar o segundo chopstick\n",nomesFilosofos[index]);
+            wait_d(chopstick[(index+1)%N]);
+        }else{
+            printf("sou o filósofo %s e vou pegar o primeiro chopstick\n",nomesFilosofos[index]);
+            wait_d(chopstick[(index+1)%N]);
+            printf("\tsou o filósofo %s e vou pegar o segundo chopstick\n",nomesFilosofos[index]);
+            wait_d(chopstick[index]);
+        }
         printf("\t\tSou o filósofo %s e  agora vou começar comer!\n\n",nomesFilosofos[index] );
-        sleep(0);
+        sleep(2);
         printf("sou o filósofo %s e terminei de comer vou liberar o primeiro chopstick\n",nomesFilosofos[index]);
         signal_d(chopstick[(index+1)%N]);
         printf("sou o filósofo %s e terminei de comer vou liberar o segundo chopstick\n",nomesFilosofos[index]);

@@ -45,14 +45,14 @@ int produtor_f()
         printf("\np> produzindo um item");
         
         printf("\np> vou entrar na seção crítica");
-        wait_d(mutex);
+        
         wait_d(empty);
-            
+        wait_d(mutex);    
         
             buffer[empty%N] = rand()%MAX; 
-            
+        signal_d(mutex);    
         signal_d(full);
-        signal_d(mutex);
+        
         
 
     return 0 ;
