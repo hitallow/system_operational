@@ -250,30 +250,62 @@ int seguranca()
     int * fim = malloc(n * sizeof(int));
 
     // copia disp para trab
-
+    for( i = 0 ; i < m; i ++ ){
+        trab[i] = disp[i];
+    }
 
     // iniciando todos de fim como false
-    
-    
+    for(i = 0; i < n; i++){
+        fim[i] = FALSE;
+    }
+    i = 0;
+    int voltas = 3*n;
+    int flag = 0;
     // buscando algum cliente que possa acabar
+    while(i<n){
+        printf("\n\nentrei no while\n");
+        // if(voltas == n  ){
+        //     if(flag)
+        //     {
+        //         i = 0;
+        //         voltas = n+1;
+        //         flag--;
+        //     }
+        // }
+        if(!fim[i]){            
+            for(j = 0 ;j < m ; j ++){
+                if(!ne[i][j] <= trab[j]){
+                    continue;
+                }
+            }
+            for(j = 0 ;j < m ; j ++){
+                trab[i] += aloc[i][j];
+            }
+            fim[i] = TRUE;
+           
+        }
+        voltas -- ;
+        i++;
+    }
+    printf("DEI UM TOTAL DE %d voltas\n",voltas);
 
-        // se o fim eh falso
-
-        // se ne <= trab
-
-            // se ne <= trab, acrescenta seu aloc em trab
-
-            // define que esse cliente pode terminar
-
-    // verifica se todos os clientes terminaram
-        
-        // se algum cliente nao terminou
-            
-            // retorna estado inseguro
-
-        // se todos terminam, retorna estado seguro
-
+    printf("como ficou meu vetor fim-> ");
+    for(int k = 0 ; k < n; k++){
+        printf("%d   ",fim[k]);
+    }
+    printf("\n\n");
+    for(i =0 ;i<n;i++){
+        if(!(fim[i])){
+            free(trab);
+            free(fim);
+            return 0;
+        }
+    }
+    free(trab);
+    free(fim);
     return 1;
+
+
 }
 
 int finaliza_cliente(int i)
