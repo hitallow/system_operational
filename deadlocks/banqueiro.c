@@ -77,6 +77,10 @@ int gera_rand(int lim, int zero);
 // imprime o estado do banco
 void print_banco();
 
+int step2b(int* trab, int index);
+
+
+
 int main(int argc, char ** argv)
 {
     if ( argc != 3 )
@@ -261,39 +265,21 @@ int seguranca()
     i = 0;
     int voltas = 3*n;
     int flag = 0;
-    // buscando algum cliente que possa acabar
+
     while(i<n){
-        printf("\n\nentrei no while\n");
-        // if(voltas == n  ){
-        //     if(flag)
-        //     {
-        //         i = 0;
-        //         voltas = n+1;
-        //         flag--;
-        //     }
-        // }
-        if(!fim[i]){            
-            for(j = 0 ;j < m ; j ++){
-                if(!ne[i][j] <= trab[j]){
-                    continue;
+
+        if(!fim[i] && step2b(trab , i)){            
+
+                for(j = 0 ;j < m ; j ++){
+                    trab[i] += aloc[i][j];
                 }
-            }
-            for(j = 0 ;j < m ; j ++){
-                trab[i] += aloc[i][j];
-            }
-            fim[i] = TRUE;
+                fim[i] = TRUE;
+ 
            
         }
         voltas -- ;
         i++;
     }
-    printf("DEI UM TOTAL DE %d voltas\n",voltas);
-
-    printf("como ficou meu vetor fim-> ");
-    for(int k = 0 ; k < n; k++){
-        printf("%d   ",fim[k]);
-    }
-    printf("\n\n");
     for(i =0 ;i<n;i++){
         if(!(fim[i])){
             free(trab);
@@ -304,10 +290,17 @@ int seguranca()
     free(trab);
     free(fim);
     return 1;
-
-
 }
-
+int step2b(int* trab, int index){
+    for(int i= 0 ;i < m ; i ++){
+        int flag  = 0;
+        if(!(ne[index][i] <= trab[i]))
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
 int finaliza_cliente(int i)
 {
     int j;
