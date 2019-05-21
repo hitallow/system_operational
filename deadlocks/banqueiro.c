@@ -263,43 +263,38 @@ int seguranca()
         fim[i] = FALSE;
     }
     i = 0;
-    int voltas = 3*n;
+    
     int flag = 0;
-
     while(i<n){
-
         if(!fim[i] && step2b(trab , i)){            
-
-                for(j = 0 ;j < m ; j ++){
-                    trab[i] += aloc[i][j];
-                }
-                fim[i] = TRUE;
- 
-           
+            for(j = 0 ;j < m ; j ++){
+                trab[i] += aloc[i][j];
+            }
+            fim[i] = TRUE;
         }
-        voltas -- ;
+        
         i++;
     }
     for(i =0 ;i<n;i++){
         if(!(fim[i])){
             free(trab);
             free(fim);
-            return 0;
+            return FALSE;
         }
     }
     free(trab);
     free(fim);
-    return 1;
+    return TRUE;
 }
 int step2b(int* trab, int index){
     for(int i= 0 ;i < m ; i ++){
         int flag  = 0;
         if(!(ne[index][i] <= trab[i]))
         {
-            return 0;
+            return FALSE;
         }
     }
-    return 1;
+    return TRUE;
 }
 int finaliza_cliente(int i)
 {
