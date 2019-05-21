@@ -190,22 +190,27 @@ int * gera_requisicao(int cliente)
 
 int requisicao(int index, int * req)
 {
-    
+
     //n é a quantidade de clientes 
     // m é a quantidade de recursos 
 
 
     // verifica se req <= ne
     for(int i = 0 ; i < m; i ++){
-        if(!(ne[index][i] >= req[i]))
+        if(req[i] > ne[index][i]){
             return FALSE;
-    }
-    // verifica se req <= disp
-    for(int i = 0 ; i < n; i++){
-        if(!(req[i]<= disp[i]))
-            return FALSE;
+        }
     }
 
+
+    // verifica se req <= disp
+    for(int i = 0 ; i < m; i++){
+        if(req[i] > disp[i]){
+            return FALSE;
+        }
+    }
+
+    // simulo a alocação
     for(int i = 0 ;i < m; i++){
         disp[i] = disp[i] - req[i];
     }
@@ -221,6 +226,7 @@ int requisicao(int index, int * req)
     if(seguranca())
     {
         // retorna verdadeiro se a requisicao eh valida
+        
         return TRUE;
     }else
     {
@@ -238,14 +244,16 @@ int requisicao(int index, int * req)
         {
             ne[index][i] += req[i];
         }
+        // requisicao negada
         return FALSE;
     }
-        // requisicao negada
-    return 0;
+        
+
 }
 
 int seguranca()
 {
+
     int i, j;
 
     int ne_menor;
@@ -262,19 +270,23 @@ int seguranca()
     for(i = 0; i < n; i++){
         fim[i] = FALSE;
     }
+     
+    int flag = n;
     i = 0;
-    
-    int flag = 0;
     while(i<n){
         if(!fim[i] && step2b(trab , i)){            
-            for(j = 0 ;j < m ; j ++){
-                trab[i] += aloc[i][j];
+            for(j = 0 ;j < m ; j++){
+                trab[j] += aloc[i][j];
             }
             fim[i] = TRUE;
         }
-        
         i++;
+        if(i==n && flag){
+            i = 0;
+            flag -- ;
+        }
     }
+
     for(i =0 ;i<n;i++){
         if(!(fim[i])){
             free(trab);
@@ -284,11 +296,11 @@ int seguranca()
     }
     free(trab);
     free(fim);
+    
     return TRUE;
 }
 int step2b(int* trab, int index){
     for(int i= 0 ;i < m ; i ++){
-        int flag  = 0;
         if(!(ne[index][i] <= trab[i]))
         {
             return FALSE;
@@ -296,6 +308,7 @@ int step2b(int* trab, int index){
     }
     return TRUE;
 }
+
 int finaliza_cliente(int i)
 {
     int j;
