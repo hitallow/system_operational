@@ -190,18 +190,18 @@ int * gera_requisicao(int cliente)
 
 int requisicao(int index, int * req)
 {
-
+    
     //n é a quantidade de clientes 
     // m é a quantidade de recursos 
 
-
+    
     // verifica se req <= ne
     for(int i = 0 ; i < m; i ++){
         if(req[i] > ne[index][i]){
             return FALSE;
         }
     }
-
+    
 
     // verifica se req <= disp
     for(int i = 0 ; i < m; i++){
@@ -283,7 +283,7 @@ int seguranca()
         i++;
         if(i==n && flag){
             i = 0;
-            flag -- ;
+            flag-- ;
         }
     }
 
@@ -355,11 +355,11 @@ void cliente(int i)
 
         for (j = 0; j < m; j++)
         {
-            printf(" %2d ",req[j]);
+            printf(" %2d | ",req[j]);
         }
-
+        
         printf("\n");
-
+        
         // enviando a requisição ao banco
         if ( requisicao(i, req) == 1 )
         {
