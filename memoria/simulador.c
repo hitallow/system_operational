@@ -36,10 +36,12 @@ typedef struct frametable_entry
   unsigned int reference_num;
 } frametable_entry;
 
+int circular = 0;
+
 /* Tabela de paginas inicializada a "todas as entradas invalidas" */
 pagetable_entry pageTable[MAX_VIRTUAL_PAGES];
 
-/* Indicador de que o frame está livre.  Valor a usar no campo "page". */
+/* Indicador de que o frame estï¿½ livre.  Valor a usar no campo "page". */
 #define FREE -1
 
 /* Tabela de paginas invertida inicializada a "todas as frames livres" */
@@ -67,7 +69,7 @@ typedef struct algorithms_t {
   selectVictimF function;
 } algorithms_t;
 
-/* Protótipos das funções de selecção de frame vítima */
+/* Protï¿½tipos das funï¿½ï¿½es de selecï¿½ï¿½o de frame vï¿½tima */
 int selectVictimRandom (void);
 int selectVictimFifo (void);
 int selectVictimLRU (void);
@@ -161,10 +163,15 @@ selectVictimFifo (void)
      frame que esta ha mais tempo carregada em memoria
    */
 
-  int victim;
+  int victim = 0;
+  int aux = -1;
 
-  /* ... */
-  
+  for(int i = 0 ;i < n_frames; i++ ){
+    if(frameTable[i].load_time < aux){
+      victim = i;
+      aux = frameTable[i].load_time;
+    }
+  }
   return victim;
 }
 
@@ -172,14 +179,19 @@ selectVictimFifo (void)
 int
 selectVictimLRU (void)
 {
+  int victim;
   /* estrategia de substituicao que escolhe como vitima a
      frame que esta ha mais tempo sem ser referenciada
    */
-
-  int victim;
-
-  /* ... */
+  int aux = -1;
+  for(int i = 0;i<n_frames;i++){
+    if(frameTable[i].last_reference_time < aux){
+      aux = frameTable[i].last_reference_time;
+      victim = i;
+    }
+  }
   
+
   return victim;
 }
 
@@ -191,10 +203,16 @@ selectVictimSC (void)
    */
 
   int victim;
-
-  /* ... */
-  
-  return victim;
+  while(TRUE){
+    if(frameTable[circular].referenced == 1){
+      frameTable[circular].referenced = 0;
+      circular = (circular+1)%n_frames;
+    }else{
+      victim = circular;
+      circular = (circular+1)%n_frames;
+      return victim;      
+    }
+  }
 }
 
 int
@@ -205,8 +223,13 @@ selectVictimLFU (void)
    */
 
   int victim;
-
-  /* ... */
+  int menorReferencia = -1;
+  for(int i =0;i<n_frames;i++){
+    if(frameTable[i].reference_num < menorReferencia){
+      victim = i;
+      menorReferencia = frameTable[i].reference_num;
+    }
+  }
   
   return victim;
 }
@@ -220,7 +243,13 @@ selectVictimMFU (void)
 
   int victim;
 
-  /* ... */
+  int maiorReferencia = -1;
+  for(int i =0;i<n_frames;i++){
+    if(frameTable[i].reference_num < maiorReferencia){
+      victim = i;
+      maiorReferencia = frameTable[i].reference_num;
+    }
+  }
   
   return victim;
 }
@@ -230,7 +259,7 @@ selectVictimMFU (void)
 int
 findPage (int frameToUse)
 {
-  /* retorna o numero da página carregada numa frame que e' dada
+  /* retorna o numero da pï¿½gina carregada numa frame que e' dada
      como argumento;
      so e' chamada para frames que tem uma pagina carregada
    */
@@ -272,13 +301,13 @@ simulateOneStep (unsigned int addr, char rw)
     new_frame = getFreeFrame (); /* tenta obter uma frame livre */
 
     if (new_frame >= 0) {	/* havia uma frame livre */
-	  /* actualiza tabela de páginas */
+	  /* actualiza tabela de pï¿½ginas */
       pageTable[page].frame = new_frame;
       pageTable[page].valid = TRUE;
 
 	/* actualiza tabela de frames
 	 note que o passo da simulacao em que se esta
-	 é usado como relogio ... */
+	 ï¿½ usado como relogio ... */
       frameTable[new_frame].page = page;
       frameTable[new_frame].load_time = step;
       frameTable[new_frame].last_reference_time = step;
@@ -286,7 +315,7 @@ simulateOneStep (unsigned int addr, char rw)
       frameTable[new_frame].reference_num = 0;
     }
     else {
-	/* nao havia frames livres - chamar um algoritmo de substituição
+	/* nao havia frames livres - chamar um algoritmo de substituiï¿½ï¿½o
 	 de paginas para escolher a frame que vai ser ocupada */
       new_frame = selectVictim ();
       victim = findPage (new_frame);
